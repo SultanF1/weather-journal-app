@@ -1,5 +1,4 @@
 /* Global Variables */
-const baseURL = 'http://api.openweathermap.org/data/2.5/forecast?id=524901&appid=';
 const APIkey = '72e50c7cdc759c0c8a5fea3cc99a0c4a';
 // Create a new date instance dynamically with JS
 let d = new Date();
@@ -55,20 +54,22 @@ const postData = async ( url = '', data = {})=>{
 };
 
 
-const retrieveData = async (url='') =>{ 
-  const request = await fetch(url);
-  try {
-  
-  const allData = await request.json()
-  console.log(allData)
-  }
-  catch(error) {
-    console.log("error", error);
-  
-  }
-};
-
-
+const retrieveData = async () =>{
+    const request = await fetch('/all');
+    try {
+    // Transform into JSON
+    const allData = await request.json()
+    console.log(allData)
+    // Write updated data to DOM elements
+    document.getElementById('temp').innerHTML = Math.round(allData.temp)+ ' degrees';
+    document.getElementById('content').innerHTML = allData.feel;
+    document.getElementById("date").innerHTML =allData.date;
+    }
+    catch(error) {
+      console.log("error", error);
+      // appropriately handle the error
+    }
+   }
 
 
 
@@ -81,9 +82,9 @@ const getInput = async function(){
       if (zip){
           tmp = await makeCall(zip)
           const feelings = document.querySelector('#feelings').value
-          const newData = {date:d,temp:tmp,feelings:feelings};
+          const newData = {date:d,temp:tmp,feel:feelings};
           postData('/add',newData);
-          updateUI(d,tmp,feelings);
+          retrieveData('/all');
           
       }
   
@@ -94,15 +95,3 @@ const button = document.querySelector('button');
 
 button.addEventListener('click', event => getInput(),false);
 
-
-
-const updateUI = async function(date,temp,cont){
-    console.log(temp)
-    date_div = document.querySelector('#date');
-    temp_div = document.querySelector('#temp');
-    content_div = document.querySelector('#content');
-    
-    date_div.innerHTML = date;
-    temp_div.innerHTML = temp;
-    content_div.innerHTML = cont;
-}
